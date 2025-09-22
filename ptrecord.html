@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Data Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #2c3e50;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+        .btn-success {
+            background-color: #27ae60;
+            border: none;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+            border: none;
+        }
+        .patient-table {
+            font-size: 0.9rem;
+        }
+        .patient-table th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .required-field::after {
+            content: "*";
+            color: red;
+        }
+        #patientForm {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-hospital me-2"></i>Patient Data Management System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-5">
+                <!-- Patient Form Card -->
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-user-plus me-2"></i> Patient Information Form
+                    </div>
+                    <div class="card-body">
+                        <form id="patientForm">
+                            <input type="hidden" id="patientId">
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label required-field">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dateOfBirth" class="form-label required-field">Date of Birth</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="gender" class="form-label required-field">Gender</label>
+                                        <select class="form-select" id="gender" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" rows="2"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="phone">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                                <input type="text" class="form-control" id="emergencyContact">
+                            </div>
+                            <div class="mb-3">
+                                <label for="medicalHistory" class="form-label">Medical History</label>
+                                <textarea class="form-control" id="medicalHistory" rows="2"></textarea>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success" id="saveButton">
+                                    <i class="fas fa-save me-2"></i>Save Patient
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancelButton" style="display: none;">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <!-- Patient List Card -->
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-users me-2"></i> Patient Records</span>
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search patients...">
+                            <button class="btn btn-light" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover patient-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Contact</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientList">
+                                    <!-- Patient data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noPatientsMessage" class="text-center p-4" style="display: none;">
+                            <i class="fas fa-user-injured fa-3x mb-3 text-muted"></i>
+                            <p class="text-muted">No patient records found. Add a new patient using the form.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Data storage
+        let patients = JSON.parse(localStorage.getItem('patients')) || [];
+        let editingId = null;
+
+        // DOM elements
+        const patientForm = document.getElementById('patientForm');
+        const patientList = document.getElementById('patientList');
+        const noPatientsMessage = document.getElementById('noPatientsMessage');
+        const saveButton = document.getElementById('saveButton');
+        const cancelButton = document.getElementById('cancelButton');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+
+        // Initialize the application
+        function init() {
+            renderPatientList();
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            patientForm.addEventListener('submit', handleFormSubmit);
+            cancelButton.addEventListener('click', resetForm);
+            searchButton.addEventListener('click', handleSearch);
+            searchInput.addEventListener('keyup', handleSearch);
+        }
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const patientData = {
+                id: editingId || Date.now().toString(),
+                fullName: document.getElementById('fullName').value,
+                dateOfBirth: document.getElementById('dateOfBirth').value,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                emergencyContact: document.getElementById('emergencyContact').value,
+                medicalHistory: document.getElementById('medicalHistory').value,
+                lastModified: new Date().toISOString()
+            };
+
+            if (editingId) {
+                // Update existing patient
+                const index = patients.findIndex(p => p.id === editingId);
+                if (index !== -1) {
+                    patients[index] = patientData;
+                }
+            } else {
+                // Add new patient
+                patients.push(patientData);
+            }
+
+            // Save to localStorage and update UI
+            localStorage.setItem('patients', JSON.stringify(patients));
+            renderPatientList();
+            resetForm();
+            
+            // Show feedback
+            alert(`Patient ${editingId ? 'updated' : 'added'} successfully!`);
+        }
+
+        // Render the patient list
+        function renderPatientList(filteredPatients = null) {
+            const dataToRender = filteredPatients || patients;
+            
+            if (dataToRender.length === 0) {
+                patientList.innerHTML = '';
+                noPatientsMessage.style.display = 'block';
+                return;
+            }
+            
+            noPatientsMessage.style.display = 'none';
+            patientList.innerHTML = dataToRender.map(patient => `
+                <tr>
+                    <td>${patient.fullName}</td>
+                    <td>${calculateAge(patient.dateOfBirth)}</td>
+                    <td>${patient.gender}</td>
+                    <td>${patient.phone || 'N/A'}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-warning me-1" onclick="editPatient('${patient.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePatient('${patient.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Calculate age from date of birth
+        function calculateAge(dateOfBirth) {
+            if (!dateOfBirth) return 'N/A';
+            
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Edit patient
+        function editPatient(id) {
+            const patient = patients.find(p => p.id === id);
+            if (!patient) return;
+            
+            // Fill form with patient data
+            document.getElementById('patientId').value = patient.id;
+            document.getElementById('fullName').value = patient.fullName;
+            document.getElementById('dateOfBirth').value = patient.dateOfBirth;
+            document.getElementById('gender').value = patient.gender;
+            document.getElementById('address').value = patient.address || '';
+            document.getElementById('phone').value = patient.phone || '';
+            document.getElementById('email').value = patient.email || '';
+            document.getElementById('emergencyContact').value = patient.emergencyContact || '';
+            document.getElementById('medicalHistory').value = patient.medicalHistory || '';
+            
+            // Change UI to edit mode
+            editingId = patient.id;
+            saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Update Patient';
+            saveButton.classList.remove('btn-success');
+            saveButton.classList.add('btn-warning');
+            cancelButton.style.display = 'block';
+            
+            // Scroll to form
+            document.getElementById('patientForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Delete patient
+        function deletePatient(id) {
+            if (!confirm('Are you sure you want to delete this patient record?')) return;
+            
+            patients = patients.filter(p => p.id !== id);
+            localStorage.setItem('patients', JSON.stringify(patients));
+            renderPatientList();
+            
+            if (editingId === id) {
+                resetForm();
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            patientForm.reset();
+            editingId = null;
+            saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Save Patient';
+            saveButton.classList.remove('btn-warning');
+            saveButton.classList.add('btn-success');
+            cancelButton.style.display = 'none';
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            if (!searchTerm) {
+                renderPatientList();
+                return;
+            }
+            
+            const filteredPatients = patients.filter(patient => 
+                patient.fullName.toLowerCase().includes(searchTerm) ||
+                (patient.phone && patient.phone.includes(searchTerm)) ||
+                (patient.email && patient.email.toLowerCase().includes(searchTerm))
+            );
+            
+            renderPatientList(filteredPatients);
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
